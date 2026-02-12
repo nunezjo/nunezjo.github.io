@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Mindset Shift: From Using AI to Building for AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #161922;
+    --bg-tertiary: #1c1f2e;
+    --bg-card: #1a1d2b;
+    --bg-code: #131620;
+    --text-primary: #e4e6ef;
+    --text-secondary: #9ca0b8;
+    --text-muted: #6b7094;
+    --accent: #4f8ff7;
+    --accent-dim: #3a6bc5;
+    --accent-glow: rgba(79, 143, 247, 0.08);
+    --accent-warm: #f0a45d;
+    --border: rgba(255,255,255,0.06);
+    --border-accent: rgba(79, 143, 247, 0.2);
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: 1.75;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Noise texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Header / Hero ── */
+  .hero {
+    position: relative;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(79,143,247,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid var(--border-accent);
+    padding: 0.4rem 1.2rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.15;
+    color: #fff;
+    max-width: 780px;
+    margin: 0 auto 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-meta {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+  }
+
+  .hero-meta strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .hero-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* ── Table of Contents ── */
+  .toc {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.4rem 2rem;
+  }
+
+  .toc a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.3rem 0;
+    display: block;
+    transition: color 0.2s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  .toc a .toc-num {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    margin-right: 0.6rem;
+  }
+
+  /* ── Main content ── */
+  .content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 2rem 6rem;
+  }
+
+  /* ── Sections ── */
+  .section {
+    padding-top: 4rem;
+  }
+
+  .section + .section {
+    border-top: 1px solid var(--border);
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-family: var(--font-body);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin-bottom: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 1.02rem;
+  }
+
+  p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  p em {
+    color: var(--text-primary);
+    font-style: italic;
+  }
+
+  /* ── Links ── */
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: var(--border-accent);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s;
+  }
+
+  a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  /* ── Lists ── */
+  ul, ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  li {
+    color: var(--text-secondary);
+    font-size: 1.02rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+  }
+
+  li strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* ── Blockquote ── */
+  blockquote {
+    position: relative;
+    margin: 2rem 0;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    background: var(--bg-secondary);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+
+  blockquote p {
+    color: var(--text-primary);
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  blockquote .attribution {
+    color: var(--text-muted);
+    font-style: normal;
+    font-size: 0.88rem;
+  }
+
+  /* ── Code blocks ── */
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--bg-tertiary);
+    padding: 0.15em 0.45em;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ── Callout / highlight boxes ── */
+  .callout {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .callout-accent {
+    border-color: var(--border-accent);
+    background: linear-gradient(135deg, rgba(79,143,247,0.04) 0%, var(--bg-card) 100%);
+  }
+
+  .callout h4 {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .callout p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ── Diagram box ── */
+  .diagram-container {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  .diagram-container pre {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    text-align: left;
+    color: var(--text-secondary);
+  }
+
+  .diagram-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  /* ── Flywheel / cycle visual ── */
+  .flywheel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .flywheel-step {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .flywheel-arrow {
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+
+  /* ── Numbered rules / guardrails ── */
+  .rules-list {
+    list-style: none;
+    padding-left: 0;
+    counter-reset: rule;
+  }
+
+  .rules-list li {
+    counter-increment: rule;
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .rules-list li::before {
+    content: counter(rule);
+    position: absolute;
+    left: 0;
+    top: 0.15rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-accent);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  /* ── Diagnostic code cards ── */
+  .diag-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .diag-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    border-top: 3px solid var(--border);
+  }
+
+  .diag-card.crisis { border-top-color: #e5534b; }
+  .diag-card.root-cause { border-top-color: var(--accent-warm); }
+  .diag-card.success { border-top-color: #56d364; }
+  .diag-card.transitional { border-top-color: #a371f7; }
+
+  .diag-card h5 {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .diag-card.crisis h5 { color: #e5534b; }
+  .diag-card.root-cause h5 { color: var(--accent-warm); }
+  .diag-card.success h5 { color: #56d364; }
+  .diag-card.transitional h5 { color: #a371f7; }
+
+  .diag-card p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Separator ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 3rem 2rem 4rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .footer .cta {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  .footer strong {
+    color: var(--text-primary);
+  }
+
+  .footer a {
+    color: var(--accent);
+  }
+
+  /* ── Fade-in animations ── */
+  .section {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section:nth-child(1)  { animation-delay: 0.05s; }
+  .section:nth-child(2)  { animation-delay: 0.08s; }
+  .section:nth-child(3)  { animation-delay: 0.11s; }
+  .section:nth-child(4)  { animation-delay: 0.14s; }
+  .section:nth-child(5)  { animation-delay: 0.17s; }
+  .section:nth-child(6)  { animation-delay: 0.20s; }
+  .section:nth-child(7)  { animation-delay: 0.23s; }
+  .section:nth-child(8)  { animation-delay: 0.26s; }
+  .section:nth-child(9)  { animation-delay: 0.29s; }
+  .section:nth-child(10) { animation-delay: 0.32s; }
+  .section:nth-child(11) { animation-delay: 0.35s; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .hero { padding: 4rem 1.25rem 3rem; }
+    .content { padding: 0 1.25rem 4rem; }
+    .toc { padding: 2rem 1.25rem; }
+    .toc-grid { grid-template-columns: 1fr; }
+    .diag-grid { grid-template-columns: 1fr; }
+    pre { padding: 1rem; font-size: 0.75rem; }
+    h2 { font-size: 1.6rem; }
+  }
+
+  /* ── Print styles ── */
+  @media print {
+    body { background: #fff; color: #222; }
+    .hero::before { display: none; }
+    body::before { display: none; }
+    .section { opacity: 1; transform: none; animation: none; }
+    a { color: #222; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HERO ════════════════ -->
+<header class="hero">
+  <div class="hero-label">Pharmacy DS&A</div>
+  <h1>The Mindset Shift: From Using AI to Building <em>for</em> AI</h1>
+  <p class="hero-meta"><strong>Josue Nunez</strong></p>
+  <p class="hero-date">February 2026</p>
+</header>
+
+<!-- ════════════════ TOC ════════════════ -->
+<nav class="toc">
+  <div class="toc-title">Contents</div>
+  <div class="toc-grid">
+    <a href="#typical-monday"><span class="toc-num">01</span>A Typical Monday</a>
+    <a href="#problem"><span class="toc-num">02</span>The Problem Underneath</a>
+    <a href="#what-changed"><span class="toc-num">03</span>What Changed</a>
+    <a href="#what-i-built"><span class="toc-num">04</span>What I Built</a>
+    <a href="#day-to-day"><span class="toc-num">05</span>How It Works Day to Day</a>
+    <a href="#results"><span class="toc-num">06</span>Real Projects, Real Results</a>
+    <a href="#compounds"><span class="toc-num">07</span>What Compounds</a>
+    <a href="#where-going"><span class="toc-num">08</span>Where This Is Going</a>
+    <a href="#no-code"><span class="toc-num">09</span>Even If You Don't Write Code</a>
+    <a href="#learned"><span class="toc-num">10</span>What I've Learned</a>
+    <a href="#start"><span class="toc-num">11</span>Where to Start</a>
+  </div>
+</nav>
+
+<!-- ════════════════ CONTENT ════════════════ -->
+<main class="content">
+
+  <!-- ── Section 1 ── -->
+  <section class="section" id="typical-monday">
+    <h2>A Typical Monday</h2>
+    <p>It's Monday morning. Leadership wants to know why a store's performance dipped last week.</p>
+    <p>The calendar is already full. The question is urgent. And answering it means digging through tables, remembering which fiscal week we're in, checking for holidays, validating against last week's numbers, and hoping nothing slipped through the cracks.</p>
+    <p>That used to take an hour. Sometimes two.</p>
+    <p><strong>Now it takes ten minutes.</strong></p>
+    <p>Not because AI got smarter. Because I spent months teaching it how <em>we</em> work.</p>
+    <p>I describe the question. Copilot drafts the query using documented patterns specific to our pharmacy data. It connects to our Lakehouse, validates against live data, and flags anything that looks off. I review every line, check the numbers against what I know about that store, adjust where needed, and send.</p>
+
+    <div class="callout callout-accent">
+      <h4>The Vision</h4>
+      <p>The future we're building toward is <strong>prescriptive</strong>: AI monitors the data, detects when something looks off, and surfaces an alert with context. Not a raw number, but an explanation built for the audience. <em>"Store X saw a 15% drop in efficiency this week. Contributing factors: holiday staffing gap on Thursday, higher-than-expected volume Friday."</em> Leadership gets the insight without pulling a report. Nobody had to dig.</p>
+    </div>
+
+    <p>That's the difference between using AI and building <em>for</em> AI.</p>
+  </section>
+
+  <!-- ── Section 2 ── -->
+  <section class="section" id="problem">
+    <h2>The Problem Underneath the Problem</h2>
+    <p>Most analytics work doesn't fail because someone can't write code.</p>
+    <p>It fails because the hard part was never the query. It's everything around it:</p>
+    <ul>
+      <li>Which table is actually the source of truth?</li>
+      <li>Which calendar are we using, and what's the right year-over-year comparison in a 53-week fiscal year?</li>
+      <li>What does the stakeholder actually <em>mean</em> when they ask for "performance"?</li>
+      <li>How do you validate fast enough to trust the answer before the meeting starts?</li>
+    </ul>
+    <p>That knowledge lives in people's heads. It's earned through years of work, learning the edge cases, building intuition about what questions to ask and which numbers to double-check. And unless someone writes it down, it walks out the door when they do.</p>
+    <p>Nitin Seth calls this <strong>proprietary knowledge</strong> in <em>Mastering the Data Paradox</em>: the idea that competitive advantage comes from codifying tacit expertise. The catch is that wisdom doesn't scale beyond one person unless it's deliberately captured and shared.</p>
+    <p>I've spent years learning our pharmacy data. The quirks. The fiscal calendar traps. The tables that look the same but serve different purposes. All of that lived in my head. If I left tomorrow, it would leave with me.</p>
+    <p>When Meijer rolled out stronger AI tooling—GitHub Copilot, Microsoft Fabric, Power BI, MCP integrations—I saw a different kind of opportunity. Not "let AI do the work," but something more foundational: <strong>turn what I know into a system that any tool can use.</strong></p>
+  </section>
+
+  <!-- ── Section 3 ── -->
+  <section class="section" id="what-changed">
+    <h2>What Changed</h2>
+    <blockquote>
+      <p>"If you want a better answer, you have to know how to ask a better question."</p>
+      <span class="attribution">— Sam Schillace, Deputy CTO, Microsoft</span>
+    </blockquote>
+    <p>The natural instinct is to hear that and think: <em>add more detail to the prompt.</em> But what it actually means is understanding how AI processes information and structuring your world accordingly.</p>
+    <p>AI doesn't know your company. It doesn't know your naming conventions, your fiscal calendar, or your business rules. It only knows what you give it access to.</p>
+    <p>The shift wasn't about prompting better. It was about <strong>building the context that makes good answers possible</strong>—and designing an architecture optimized for how AI actually works.</p>
+    <p>Here's what that means in practice. AI is exceptionally good at pattern recognition, summarization, following structured rules, and synthesizing across documents. It struggles with things that were never written down: your company's conventions, the reasoning behind past decisions, judgment calls about what matters most. It can process enormous amounts of information, but if that information is scattered and unstructured, it wastes its capacity just trying to find what's relevant.</p>
+    <p>The fix isn't to give AI less. It's architecture. You build systems that direct AI to the right context for the current task: instruction files that say "for this kind of work, look here," domain knowledge that loads automatically based on what you're doing, cross-references that point AI to the right place instead of making it search.</p>
+    <p>Once that clicked, the question changed. I stopped asking <em>"How do I get AI to do this?"</em> and started asking <em>"How do I give AI what it needs?"</em></p>
+  </section>
+
+  <!-- ── Section 4 ── -->
+  <section class="section" id="what-i-built">
+    <h2>What I Built</h2>
+
+    <h3>RxContext: A Knowledge Base Designed for AI</h3>
+    <p>I built a structured knowledge base called <strong>RxContext</strong> that lives in my VS Code workspace. It documents everything our pharmacy analytics team works with:</p>
+    <ul>
+      <li><strong>Fact and dimension tables</strong>: grain, joins, key fields, business definitions</li>
+      <li><strong>Fiscal calendar logic</strong>: 53-week years, year-over-year comparisons, holiday handling</li>
+      <li><strong>SQL patterns and rules</strong> for Fabric Lakehouse queries</li>
+      <li><strong>Power BI semantic models</strong>: measures, relationships, dynamic date slicers, design standards</li>
+      <li><strong>Data quality monitoring</strong> and alerting patterns</li>
+      <li><strong>Azure DevOps workflows</strong>: PI planning, work item standards, sprint retrospectives</li>
+    </ul>
+    <p>But RxContext isn't documentation in the traditional sense. It's the AI architecture itself:</p>
+    <ul>
+      <li><strong>Agent personas</strong> that tune AI behavior for different tasks: planning, code review, analytics</li>
+      <li><strong>Domain skills</strong> that load automatically based on what I'm working on: data quality, Power BI, Azure DevOps</li>
+      <li><strong>Reusable prompts</strong> for common tasks: DAX measures, work item creation, Lakehouse queries</li>
+      <li><strong>Instruction files</strong> that encode guardrails and conventions before AI writes a single line of code</li>
+    </ul>
+    <p>When Copilot reads my code, it also reads this context. It knows which table is the source of truth for a given question. It knows to check for holidays before comparing week-over-week numbers. It knows our naming conventions and follows them without being reminded.</p>
+    <p>What used to be 20 minutes of back-and-forth (<em>"What table? What columns? What's the grain?"</em>) now takes 2 minutes.</p>
+
+    <div class="callout">
+      <h4>The Rx Analytics Framework</h4>
+      <p>Tying it all together is the <strong>Rx Analytics Framework</strong>, a maturity model that keeps every project aligned with the team's mission. It defines four levels: <strong>Descriptive</strong> (what happened), <strong>Diagnostic</strong> (why it happened), <strong>Predictive</strong> (what might happen), and <strong>Prescriptive</strong> (what to do about it). Every project I take on is a puzzle piece moving us up that curve.</p>
+      <p>The Labor Performance Model started as Descriptive reporting and is now Diagnostic, with 21 alert codes that tell a district manager exactly <em>why</em> a store's score dropped. Next step: Prescriptive, with automated staffing recommendations. Copilot references this framework before writing code, checking where a project sits on the maturity curve and who the audience is.</p>
+    </div>
+
+    <h3>One Knowledge Base, Every Tool</h3>
+    <p>The key design decision: <strong>the same context feeds every AI tool I use.</strong></p>
+    <p>RxContext isn't locked to GitHub Copilot. It's a central knowledge base that any AI-powered tool can reference. Invest in documentation once, and it pays off everywhere.</p>
+
+    <div class="diagram-container">
+      <div class="diagram-label">Architecture</div>
+<pre>┌─────────────────────────────────────────────────────────────────┐
+│                          <strong style="color:var(--accent)">RxContext</strong>                              │
+│  Tables · Calendar · SQL Patterns · Standards · Business Rules  │
+│  Agent Personas · Skills · Prompts · Guardrails                 │
+└─────────────────────────────┬───────────────────────────────────┘
+                              │
+  ┌─────────┬─────────┬───────┼───────┬─────────┬─────────┐
+  │         │         │       │       │         │         │
+  ▼         ▼         ▼       ▼       ▼         ▼         ▼
+GitHub    MCP       Fabric   Azure   Power    M365     Copilot
+Copilot   Servers   Lake-    DevOps  BI       Copilot  Agents
+                    house</pre>
+    </div>
+
+    <p>This isn't a folder of files AI reads top to bottom. It's organized so AI can quickly locate the relevant section for the current task, skip what doesn't apply, and follow links when it needs deeper context.</p>
+
+    <h3>The GitHub Copilot Setup</h3>
+    <p>The system runs through a <code>.github/</code> folder structure that Copilot reads automatically.</p>
+    <p><strong>Five custom agents</strong>, each with a specific role and limited tool access. <code>pharmacy-analyst</code> handles Fabric and Power BI work with full pharmacy domain context. <code>plan</code> generates implementation plans but cannot edit files. <code>implement</code> executes those plans with quality checks built in. <code>code-reviewer</code> checks output against naming conventions and standards. <code>pi-planner</code> manages Azure DevOps work items and sprint capacity. They hand off to each other: plan a feature, implement it, review it, mark the work item Done.</p>
+    <p><strong>Nine domain skills</strong> that load automatically based on context. Open a labor notebook and Copilot loads scoring thresholds, ETL pipeline context, and diagnostic codes. Open a Power BI file and it loads DAX patterns and design standards. I don't pick what loads. The system matches knowledge to task.</p>
+    <p><strong>Eight reusable prompts</strong> for common workflows. <code>/query-lakehouse</code> applies Fabric SQL patterns automatically. <code>/create-dax-measure</code> asks whether I want dynamic or non-dynamic before generating anything. <code>/create-work-item</code> enforces that every work item gets a parent Feature, effort estimate, and WSJF priority scores.</p>
+    <p><strong>Path-specific instruction files</strong> that apply rules based on file type. Open any <code>.ipynb</code> notebook and Copilot automatically knows: read the markdown header first, check for configuration cells, never hardcode holidays. Those rules fire before I type a single prompt.</p>
+    <p><strong>A global instruction file</strong> that encodes team conventions, naming standards, fiscal calendar rules, and decision frameworks that apply to every session regardless of task.</p>
+
+    <h3>Structured for Retrieval, Not Just Reading</h3>
+    <p>GitHub's <a href="https://docs.github.com/en/copilot/using-github-copilot/prompt-engineering-for-github-copilot">prompt engineering guidance</a> and Anthropic's <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview">Claude documentation</a> shaped how I think about structuring information for AI. The principles aren't complicated, but they're counterintuitive if you've only ever written documentation for humans:</p>
+    <ul>
+      <li><strong>Chunked, not monolithic.</strong> AI retrieves better from many focused documents than one massive file.</li>
+      <li><strong>Strong anchors.</strong> Consistent headings and naming conventions help AI find the right section quickly.</li>
+      <li><strong>Linked, not duplicated.</strong> Cross-references create a single source of truth that AI follows automatically.</li>
+      <li><strong>Guardrails up front.</strong> Critical rules go at the top of instruction files, where AI encounters them before it starts generating anything.</li>
+      <li><strong>Progressive depth.</strong> Overview first, detailed docs linked. AI goes shallow or deep depending on the task.</li>
+    </ul>
+    <p>There's a practical limit here, too. AI has finite context windows. Feed it messy information and it focuses on noise instead of signal. There's also a cost dimension: more context means more tokens, which means more compute. Being deliberate about what you include isn't just good practice. It's economical.</p>
+    <p>An unexpected side effect: writing for AI retrieval made me a better writer for humans, too. My notebooks have cleaner markdown headers. My code has more purposeful comments. My SQL has consistent formatting. When you start writing for structured retrieval, you end up producing higher-quality documentation everywhere—not because you're trying harder, but because the habit sticks.</p>
+
+    <h3>The Guardrail System</h3>
+    <p>Some things should never be left to AI's discretion. These are encoded as rules that AI encounters <em>before</em> it starts writing code:</p>
+    <ol class="rules-list">
+      <li>Never hardcode values that exist in dimension tables: holidays, fiscal dates, store flags</li>
+      <li>Check for holidays before comparing period-over-period numbers</li>
+      <li>Use consistent naming prefixes for all tables (<code>FACT_</code>, <code>DIM_</code>)</li>
+    </ol>
+    <p>These aren't suggestions. They're guardrails built into the instruction layer. AI doesn't "forget" to check for holidays because the rule is baked into its context every single session.</p>
+    <p>As models improve (and they will), this architecture becomes more valuable, not less. Better models plus better context equals compounding returns.</p>
+  </section>
+
+  <!-- ── Section 5 ── -->
+  <section class="section" id="day-to-day">
+    <h2>How It Works Day to Day</h2>
+
+    <h3>The Multi-Tool Workflow</h3>
+    <p>I don't work with one AI connection at a time. I orchestrate several through MCP (Model Context Protocol) servers, each connected to a different part of the stack, all grounded in RxContext:</p>
+    <ul>
+      <li><strong>Figma MCP</strong> for report design. Describe the vision for a report page, and AI generates background layouts using our design standards: colors, fonts, spacing. No more starting from a blank canvas.</li>
+      <li><strong>Power BI MCP</strong> for DAX measures, visual configuration, and interactivity. It reads our PBIP files directly and generates code that follows our naming conventions.</li>
+      <li><strong>MSSQL MCP</strong> for live data validation against our Lakehouse. Build a measure, immediately test it against real data.</li>
+    </ul>
+    <p>A typical session: I describe what a report needs to accomplish. Figma MCP drafts the background. Power BI MCP creates the measures and visuals. MSSQL MCP validates the numbers against production. One session. Multiple tools. All grounded in the same knowledge base.</p>
+
+    <h3>Power BI as Code</h3>
+    <p>Microsoft's shift to <strong>PBIP format</strong> (Power BI Project) was a significant unlock. Reports became human-readable JSON files, which means AI can read them too.</p>
+    <p>What that enables:</p>
+    <ul>
+      <li><strong>Pattern extraction.</strong> Copilot scans well-built reports and identifies best practices: bookmark structures, page layouts, measure naming, visual dimensions. Then it applies those patterns to new work.</li>
+      <li><strong>Automated QA.</strong> AI catches things I'd miss: broken interactivity, misaligned visuals, inconsistent fonts, colors that drift from the palette.</li>
+      <li><strong>Consistency at scale.</strong> Every new report inherits the quality of previous ones. Bookmarks work the same way. Pages fit the same grid. Nothing looks "off."</li>
+    </ul>
+    <p>I used to spend hours manually checking reports for consistency. Now that happens in seconds, and catches issues I wouldn't notice until a stakeholder pointed them out.</p>
+
+    <h3>Live Validation</h3>
+    <p>The piece that ties it together: <strong>AI can validate its own output against real data.</strong></p>
+    <p>Through MCP, Copilot connects to our Fabric SQL endpoint while I'm building. When it suggests a measure, I can immediately run it against production data and compare. When it drafts a query, I can verify the numbers match what I know to be true.</p>
+    <p>This is what makes the whole system trustworthy. Not blind confidence in AI output, but a workflow where verification is built into every step.</p>
+  </section>
+
+  <!-- ── Section 6 ── -->
+  <section class="section" id="results">
+    <h2>Real Projects, Real Results</h2>
+
+    <h3>Labor Performance Model</h3>
+    <p>Scores 200+ pharmacies weekly against their labor plan, normalized for store size so a $500 variance at a small location isn't treated the same as at a high-volume store. Each store gets a continuous score from −2 to +4, a staffing trend, and a diagnostic code explaining <em>why</em> the score is what it is.</p>
+    <p>There are 21 diagnostic codes organized into four categories:</p>
+
+    <div class="diag-grid">
+      <div class="diag-card crisis">
+        <h5>Crisis</h5>
+        <p>Immediate action needed. Worsening understaffing, chaotic staffing swings, sudden score drops.</p>
+      </div>
+      <div class="diag-card root-cause">
+        <h5>Root Cause</h5>
+        <p>The underlying driver. Plan misalignment, chronic understaffing, high leave rates, low efficiency.</p>
+      </div>
+      <div class="diag-card success">
+        <h5>Success</h5>
+        <p>Model stores and improving trends worth studying.</p>
+      </div>
+      <div class="diag-card transitional">
+        <h5>Transitional</h5>
+        <p>Stores in between, moving in one direction or the other.</p>
+      </div>
+    </div>
+
+    <p>Each code maps to a recommended action. The system doesn't just say a store is struggling. It says <em>why</em>, and what to do about it. Automated alerts at three severity levels surface the worst situations before leadership has to ask.</p>
+    <p>Copilot helped me iterate through dozens of versions of the scoring logic. But the thresholds, the diagnostic reasoning, the business knowledge of what "understaffed" actually means in pharmacy operations? That comes from years of experience. AI accelerated the build. The substance is human.</p>
+
+    <h3>AI-Generated Performance Reports</h3>
+    <p>On top of the Labor Model, I built a prompt system that turns raw scoring data into leadership-ready performance briefs: rankings, trend analysis, diagnostic breakdowns, and recommended actions—formatted in styled HTML using a design system I created specifically for AI-generated output.</p>
+    <p>The prompts encode all 21 diagnostic codes, variance rules, scoring context, and alert thresholds so AI interprets the data correctly instead of guessing. Over more than ten iterations, I refined the system based on stakeholder feedback: tightening language, enforcing fiscal terminology, eliminating arbitrary cutoffs that hid important data, and adding data accuracy guardrails that require AI to query exact counts instead of approximating. If the data says 47 stores are in the Warning tier, the report says 47, not "approximately 50."</p>
+    <p><strong>Reports that took hours of manual analysis now generate in minutes.</strong></p>
+
+    <h3>Power BI Design Standards</h3>
+    <p>I had Copilot scan our existing pharmacy reports and extract recurring patterns. The result: documented standards that make every new report consistent—bookmarks, layouts, measure naming, color systems, page structure. New reports start from a quality baseline instead of a blank canvas.</p>
+
+    <h3>Sprint Reporting Automation</h3>
+    <p>End-of-sprint reporting used to take hours: pulling Azure DevOps work items, calculating velocity and capacity metrics, drafting the narrative. Now Copilot handles the data pull and calculations. I review every number against the board, fix what doesn't match reality, and rewrite the sections where the framing needs a human voice.</p>
+
+    <h3>Data Quality Monitoring</h3>
+    <p>Our DQ system writes alerts in a format AI can parse and summarize. When something breaks in a pipeline, I get a clear, stakeholder-ready summary instead of a cryptic error log. The time from "something broke" to "here's what happened and what we're doing" dropped significantly.</p>
+  </section>
+
+  <!-- ── Section 7 ── -->
+  <section class="section" id="compounds">
+    <h2>What Compounds</h2>
+    <p>Over time, I realized I was encoding more than data definitions. I was encoding my own decision-making process.</p>
+    <p>When I build a report, I follow a sequence: check the grain, validate against last period, look for holidays, test edge cases, review alignment. Those steps aren't arbitrary. They're the product of years of mistakes and lessons learned.</p>
+    <p>Now those steps live in agent skills and instruction files. When Copilot helps me build something new, it doesn't just generate code. It runs the same validation checks I would run. It asks the same clarifying questions I would ask. It flags the edge cases I've documented.</p>
+    <p>This is the leverage that compounds. Every time I refine a workflow or document a lesson learned, the system improves. The next project starts from a higher baseline. The project after that starts higher still. It's not replacing judgment. It's extending it across time and tasks.</p>
+
+    <div class="flywheel">
+      <span class="flywheel-step">Context</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Better Output</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Better Context</span>
+      <span class="flywheel-arrow">→</span>
+      <span class="flywheel-step">Repeat</span>
+    </div>
+
+    <p>The first project is the hardest. Every one after that gets easier.</p>
+  </section>
+
+  <!-- ── Section 8 ── -->
+  <section class="section" id="where-going">
+    <h2>Where This Is Going</h2>
+    <p>Everything I've built connects to one trajectory: <strong>moving from reactive to prescriptive analytics.</strong></p>
+    <p>Some of this is already real. AI generates professional performance reports from our Labor Model data today, with stakeholder-calibrated language, styled formatting, and built-in accuracy checks. But those reports still require someone to initiate them. The next steps:</p>
+    <ul>
+      <li><strong>Fully automated performance summaries</strong> that land in a pharmacy district manager's inbox every period. No one has to run a report. Personalized to their stores, with diagnostic findings and recommended actions attached.</li>
+      <li><strong>Prescriptive alerts</strong> that surface problems before leadership notices stale data or dipping metrics.</li>
+      <li><strong>Natural language Q&A</strong> that lets anyone ask "How did my stores do this week?" without knowing SQL.</li>
+    </ul>
+    <p>Microsoft is building toward a world where AI agents operate alongside people—not just answering questions, but running workflows, monitoring systems, taking action. The phrase they use: <strong>"human-led, agent-operated."</strong></p>
+    <p>That future runs on one thing: <strong>context.</strong></p>
+    <p>An agent can't monitor pharmacy labor performance if it doesn't know what the thresholds are. It can't generate a meaningful summary if it doesn't know who the audience is or what level of detail they need. It can't alert leadership to a problem if it doesn't understand what "normal" looks like.</p>
+    <p>Every piece of documentation I write, every business rule I encode, every naming convention I standardize—it's all groundwork for that future. When Fabric gets Copilot agents, when Power BI gets natural language Q&A, when Teams gets AI-powered insights, the teams that prepared their context will be ready. The ones that didn't will still be pulling manual reports.</p>
+
+    <blockquote>
+      <p>"Organizations seeing real enterprise value from AI are nearly 3x more likely to have fundamentally redesigned their workflows."</p>
+      <span class="attribution">— McKinsey Global Institute, "The Economic Potential of Generative AI"</span>
+    </blockquote>
+
+    <p>The tools are already here. Power BI shifted to PBIP format, making reports readable by AI. GitHub Copilot added MCP servers, connecting AI to live data. VS Code evolved into an AI-native development environment. Fabric, Azure, and Microsoft 365 all added Copilot integration points. The infrastructure exists. The question is who builds the context layer on top of it.</p>
+  </section>
+
+  <!-- ── Section 9 ── -->
+  <section class="section" id="no-code">
+    <h2>Why This Matters Even If You Don't Write Code</h2>
+    <p>You might be reading this and thinking it's a developer story. It's not.</p>
+    <p>The same principles apply to any knowledge work. If you answer the same questions repeatedly, document those answers where AI can find them. If you have processes that live only in your head, write them down so AI can help you follow them consistently. If you spend time hunting for information scattered across tools, structured documentation changes that entirely.</p>
+    <p>Microsoft Copilot in Word, Excel, and Outlook is already looking for context it can use. The people who give it better context—clearer documents, more structured data, well-organized files—will get better results. That's not a technical skill. That's a working habit.</p>
+  </section>
+
+  <!-- ── Section 10 ── -->
+  <section class="section" id="learned">
+    <h2>What I've Learned</h2>
+    <p><strong>Context is the product.</strong> The model isn't your differentiator. Your definitions, standards, and decision rules are. Everyone has access to the same AI. Not everyone has context worth feeding it.</p>
+    <p><strong>Structure beats volume.</strong> More context isn't always better. If AI can't reliably find it, it can't use it. Architecture that directs AI to the right context for the current task—instruction files, skills that load based on what you're doing, consistent names and cross-links—beats dumping everything into one giant document.</p>
+    <p><strong>Know what to delegate and what to keep.</strong> AI capabilities are powerful but uneven. It can draft a complex query in seconds and hallucinate a business rule in the same breath. As AI agents take on more autonomous work, the critical skill isn't just using them. It's knowing which tasks to hand off, which to keep, and where to draw the verification line.</p>
+    <p><strong>Trust comes from verification, not confidence.</strong> Connect outputs to live data. Run the same validation checks every time. Make "prove it" a default step, not an afterthought.</p>
+    <p><strong>Become the conductor.</strong> The job shifts from doing every step yourself to designing the system, setting the guardrails and standards, and verifying the output. AI executes. You decide. And you check. Nothing leaves my desk without being validated against what I know to be true.</p>
+    <p><strong>Compounding beats heroics.</strong> Each artifact becomes the starting point for the next one. The system gets better with every project, not just every model upgrade.</p>
+  </section>
+
+  <!-- ── Section 11 ── -->
+  <section class="section" id="start">
+    <h2>Where to Start</h2>
+    <p>You don't need to build a full knowledge base to start seeing results. If you're writing a one-off script or asking a quick question, just ask. The infrastructure I've described is for people who do the same kind of work repeatedly and want each project to build on the last.</p>
+    <p>Start with one thing.</p>
+    <p><strong>Pick your most-repeated question.</strong> The one you answer for other people over and over. Write the answer down somewhere AI can see it: a markdown file, a shared document, anywhere structured.</p>
+    <p><strong>Reference it next time.</strong> When you use Copilot, point it there: <em>"Using the patterns in this file, help me with…"</em> Watch how the output changes when AI has real context instead of guessing.</p>
+    <p><strong>Keep going.</strong> Every time you solve something, ask yourself: <em>"Could I write this down so I don't solve it from scratch next time?"</em> Then do it. The five minutes you spend documenting today saves thirty minutes next month, and thirty more the month after that.</p>
+    <p>That's the flywheel. Start it spinning.</p>
+
+    <hr>
+
+    <p>A year ago, I was <em>using</em> AI the same way most people were: occasional code suggestions, one-off questions. Today, I'm building for it. Copilot understands our analytics framework, our tables, our fiscal calendar logic, our quality standards—because I built that context piece by piece over months of real work.</p>
+    <p>Every deliverable adds to it. A documented pattern. A validated rule. A refined guardrail. Those pieces connect and compound. Every new project starts from a better baseline than the last.</p>
+
+    <blockquote>
+      <p>"The programming language of the future is human language."</p>
+      <span class="attribution">— Jensen Huang, CEO, NVIDIA</span>
+    </blockquote>
+
+    <p>AI has democratized creation. You don't need to write code to build things anymore. You need to know what's worth building and why.</p>
+    <p>The quality is still on you. Every deliverable that leaves my desk has my name on it, and I treat it that way. AI is a powerful tool, but only as good as the person directing it and the context they give it to work with.</p>
+    <p>AI doesn't know what's worth building for <em>your</em> organization. It doesn't know your business rules, your quality standards, your definition of "good." That knowledge, earned through years of work, is your competitive advantage.</p>
+    <p><strong>The moment you start documenting it, that expertise stops being personal and starts becoming infrastructure.</strong></p>
+  </section>
+
+</main>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer class="footer">
+  <p class="cta">If you want to compare notes or see the setup in action, reach out.</p>
+  <p><strong>Josue Nunez</strong></p>
+  <p>Pharmacy DS&A</p>
+  <p><a href="mailto:Josue.Nunez@meijer.com">Josue.Nunez@meijer.com</a></p>
+</footer>
+
+</body>
+</html>
